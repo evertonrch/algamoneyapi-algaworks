@@ -1,0 +1,1 @@
+ALTER TABLE tb_pessoa MODIFY COLUMN ativo BOOLEAN;
