@@ -1,0 +1,1 @@
+INSERT INTO tb_categoria(nome) VALUES ("Lazer"),("Alimetnação"),("Supermercado"),("Farmárcia"),("Outros");

@@ -12,21 +12,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@RestController
 @SpringBootApplication
 public class AlgamoneyApiApplication {
 
-	private static List<String> beans;
-
-	@GetMapping("/beans")
-	public ResponseEntity<String[]> beans() {
-		String[] beansArr = beans.toArray(new String[beans.size()]);
-		return ResponseEntity.ok(beansArr);
-	}
-
-	public static void main(String[] args) {
-		ApplicationContext context =  SpringApplication.run(AlgamoneyApiApplication.class, args);
-		AlgamoneyApiApplication.beans = new ArrayList<>(Arrays.asList(context.getBeanDefinitionNames()));
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AlgamoneyApiApplication.class, args);
+    }
 
 }
