@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class CategoriaResource {
     }
 
     @PostMapping
-    public ResponseEntity<Categoria> create(@RequestBody Categoria categoria) {
+    public ResponseEntity<Categoria> create(@RequestBody @Valid Categoria categoria) {
         Categoria novaCategoria = categoriaRepository.save(categoria);
 
         URI uri = createLocationResource(novaCategoria);

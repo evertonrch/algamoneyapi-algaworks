@@ -7,9 +7,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ControllerAdvice
 public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
@@ -25,22 +30,24 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, new Error(msgUsuario, msgDesenvolvedor), headers, HttpStatus.BAD_REQUEST, request);
     }
 
-    private static class Error {
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-        private String msg;
-        private String msgDesenvolvedor;
-
-        public Error(String msg, String msgDesenvolvedor) {
-            this.msg = msg;
-            this.msgDesenvolvedor = msgDesenvolvedor;
-        }
-
-        public String getMsg() {
-            return msg;
-        }
-
-        public String getMsgDesenvolvedor() {
-            return msgDesenvolvedor;
-        }
+        List<Error> errors = listError(ex.getBindingResult());
+        return handleExceptionInternal(ex, errors, headers, HttpStatus.BAD_REQUEST, request);
     }
+
+    private List<Error> listError(BindingResult results) {
+        List<Error> errors = new ArrayList<>();
+
+        results.getFieldErrors().forEach(fieldError -> {
+            String msgUsuario = messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
+            String msgDesenvolvedor = fieldError.toString();
+            errors.add(new Error(msgUsuario, msgDesenvolvedor));
+        });
+
+        return errors;
+    }
+
 }
+
