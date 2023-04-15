@@ -1,12 +1,16 @@
 package com.algamoney.api.web;
 
+import com.algamoney.api.event.RecursoCriadoEvent;
 import com.algamoney.api.model.Pessoa;
 import com.algamoney.api.repository.PessoaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -18,6 +22,9 @@ public class PessoaResource {
     @Autowired
     private PessoaRepository pessoaRepository;
 
+    @Autowired
+    private ApplicationEventPublisher publisher;
+
     @GetMapping
     public ResponseEntity<List<Pessoa>> all() {
         List<Pessoa> pessoas = pessoaRepository.findAll();
@@ -27,19 +34,14 @@ public class PessoaResource {
     }
 
     @PostMapping
-    public ResponseEntity<Pessoa> create(@RequestBody @Valid Pessoa pessoa) {
+    public ResponseEntity<Pessoa> create(@RequestBody @Valid Pessoa pessoa, HttpServletResponse response) {
         Pessoa newPessoa = pessoaRepository.save(pessoa);
-
-        URI uri = creataLocationResource(newPessoa);
-        return ResponseEntity.created(uri).body(newPessoa);
+        publisher.publishEvent(new RecursoCriadoEvent(this, response, newPessoa.getId()));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(newPessoa);
     }
 
-    private URI creataLocationResource(Pessoa newPessoa) {
-        return ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(newPessoa.getId())
-                .toUri();
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Pessoa> getPessoa(@PathVariable Long id) {
