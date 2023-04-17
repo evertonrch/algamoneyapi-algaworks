@@ -3,6 +3,7 @@ package com.algamoney.api.web;
 import com.algamoney.api.event.RecursoCriadoEvent;
 import com.algamoney.api.model.Pessoa;
 import com.algamoney.api.repository.PessoaRepository;
+import com.algamoney.api.service.PessoaService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,6 +25,9 @@ public class PessoaResource {
     private PessoaRepository pessoaRepository;
 
     @Autowired
+    private PessoaService pessoaService;
+
+    @Autowired
     private ApplicationEventPublisher publisher;
 
     @GetMapping
@@ -37,6 +41,7 @@ public class PessoaResource {
     @PostMapping
     public ResponseEntity<Pessoa> create(@RequestBody @Valid Pessoa pessoa, HttpServletResponse response) {
         Pessoa newPessoa = pessoaRepository.save(pessoa);
+
         // Evento de criar header Location
         publisher.publishEvent(new RecursoCriadoEvent(this, response, newPessoa.getId()));
         return ResponseEntity
@@ -55,13 +60,7 @@ public class PessoaResource {
     @PutMapping("/{id}")
     public ResponseEntity<Pessoa> updatePessoa(@PathVariable Long id,
                                                @Valid @RequestBody Pessoa pessoaRequest) {
-        Optional<Pessoa> findPessoa = pessoaRepository.findById(id);
-        if (findPessoa.isEmpty())
-            throw new EmptyResultDataAccessException(1);
-
-        Pessoa pessoa = findPessoa.get();
-        BeanUtils.copyProperties(pessoaRequest, pessoa, "id");
-        pessoaRepository.save(pessoa);
+        Pessoa pessoa = pessoaService.updatePessoa(id, pessoaRequest);
         return ResponseEntity.ok(pessoa);
     }
 }
