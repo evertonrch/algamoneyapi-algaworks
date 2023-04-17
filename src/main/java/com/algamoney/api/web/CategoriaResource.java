@@ -43,9 +43,16 @@ public class CategoriaResource {
     @PostMapping
     public ResponseEntity<Categoria> create(@RequestBody @Valid Categoria categoria, HttpServletResponse response) {
         Categoria novaCategoria = categoriaRepository.save(categoria);
+        // Evento de criar header Location
         publisher.publishEvent(new RecursoCriadoEvent(this, response, novaCategoria.getId()));
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(novaCategoria);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        categoriaRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

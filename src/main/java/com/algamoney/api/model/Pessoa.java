@@ -30,11 +30,37 @@ public class Pessoa {
         return nome;
     }
 
-    public Boolean isAtivo() {
+    public Boolean getAtivo() {
         return ativo;
     }
 
     public Endereco getEndereco() {
         return endereco;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
+
+    @Override
+    public String toString() {
+        return "Pessoa{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", ativo=" + ativo +
+                ", endereco=" + endereco +
+                '}';
     }
 }
