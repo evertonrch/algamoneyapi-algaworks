@@ -1,7 +1,6 @@
 package com.algamoney.api.event;
 
 import org.springframework.context.ApplicationEvent;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 

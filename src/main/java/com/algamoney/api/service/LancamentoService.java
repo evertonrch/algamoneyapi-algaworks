@@ -25,4 +25,9 @@ public class LancamentoService {
         Optional<Lancamento> optLancamento = lancamentoRepository.findById(id);
         return optLancamento.orElseThrow(() -> new EmptyResultDataAccessException(1));
     }
+
+    public Lancamento createLancamento(Lancamento lancamentoRequest) {
+        lancamentoRepository.save(lancamentoRequest);
+        return lancamentoRequest;
+    }
 }
