@@ -12,7 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -28,19 +27,17 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String msgUsuario = messageSource.getMessage("mensagem.invalida", null, LocaleContextHolder.getLocale());
-        String msgDesenvolvedor = ex.getCause().getMessage();
-
+        String msgDesenvolvedor = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
         return handleExceptionInternal(ex, new Error(msgUsuario, msgDesenvolvedor), headers, HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler({ EmptyResultDataAccessException.class })
+    @ExceptionHandler({EmptyResultDataAccessException.class})
     public ResponseEntity<?> handleEmptyResultDataAccessException() {
         return ResponseEntity.notFound().build();
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-
         List<Error> errors = listError(ex.getBindingResult());
         return handleExceptionInternal(ex, errors, headers, HttpStatus.BAD_REQUEST, request);
     }
