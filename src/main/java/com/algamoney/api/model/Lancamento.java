@@ -1,5 +1,7 @@
 package com.algamoney.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
@@ -31,6 +33,8 @@ public class Lancamento {
     private BigDecimal valor;
 
     @NotNull
+    @JsonProperty("tipo")
+    @Column(name = "tipo")
     @Enumerated(EnumType.STRING)
     private TipoLancamento tipoLancamento;
 
