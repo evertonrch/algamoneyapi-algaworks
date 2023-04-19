@@ -1,7 +1,11 @@
 package com.algamoney.api.service;
 
 import com.algamoney.api.model.Lancamento;
+import com.algamoney.api.model.Pessoa;
 import com.algamoney.api.repository.LancamentoRepository;
+import com.algamoney.api.repository.PessoaRepository;
+import com.algamoney.api.service.exception.PessoaInativaException;
+import com.algamoney.api.service.exception.PessoaInexistenteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,10 @@ public class LancamentoService {
     @Autowired
     private LancamentoRepository lancamentoRepository;
 
+    @Autowired
+    private PessoaRepository pessoaRepository;
+
+
     public List<Lancamento> getLancamentos() {
         List<Lancamento> lancamentos = lancamentoRepository.findAll();
         return lancamentos.isEmpty() ? Collections.emptyList() : lancamentos;
@@ -27,7 +35,16 @@ public class LancamentoService {
     }
 
     public Lancamento createLancamento(Lancamento lancamentoRequest) {
-        lancamentoRepository.save(lancamentoRequest);
-        return lancamentoRequest;
+        Optional<Pessoa> optPessoa = pessoaRepository.findById(lancamentoRequest.getPessoa().getId());
+        if (optPessoa.isEmpty())
+            throw new PessoaInexistenteException();
+
+        Pessoa pessoa = optPessoa.get();
+        if (pessoa.isInativo())
+            throw new PessoaInativaException();
+
+        return lancamentoRepository.save(lancamentoRequest);
     }
+
+
 }
