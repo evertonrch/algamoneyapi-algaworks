@@ -9,6 +9,8 @@ import com.algamoney.api.service.exception.PessoaInativaException;
 import com.algamoney.api.service.exception.PessoaInexistenteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -25,9 +27,8 @@ public class LancamentoService {
     private PessoaRepository pessoaRepository;
 
 
-    public List<Lancamento> getLancamentos(LancamentoFilter lancamentoFilter) {
-        List<Lancamento> lancamentos = lancamentoRepository.filtrar(lancamentoFilter);
-        return lancamentos.isEmpty() ? Collections.emptyList() : lancamentos;
+    public Page<Lancamento> getLancamentos(LancamentoFilter lancamentoFilter, Pageable pageable) {
+        return lancamentoRepository.filtrar(lancamentoFilter, pageable);
     }
 
     public Lancamento getLancamentoById(Long id) {

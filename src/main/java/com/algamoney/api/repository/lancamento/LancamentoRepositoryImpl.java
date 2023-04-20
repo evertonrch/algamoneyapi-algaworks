@@ -4,6 +4,9 @@ import com.algamoney.api.model.Lancamento;
 import com.algamoney.api.model.Lancamento_;
 import com.algamoney.api.repository.filter.LancamentoFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,7 +24,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
     private EntityManager entityManager;
 
     @Override
-    public List<Lancamento> filtrar(LancamentoFilter lancamentoFilter) {
+    public Page<Lancamento> filtrar(LancamentoFilter lancamentoFilter, Pageable pageable) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Lancamento> criteria = builder.createQuery(Lancamento.class);
         Root<Lancamento> root = criteria.from(Lancamento.class);
@@ -31,7 +34,9 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
 
         TypedQuery<Lancamento> query = entityManager.createQuery(criteria);
-        return query.getResultList();
+        restricoesPaginacao(query, pageable);
+
+        return new PageImpl<>(query.getResultList(), pageable, total(lancamentoFilter));
     }
 
     private Predicate[] criarRestricoes(LancamentoFilter lancamentoFilter, CriteriaBuilder builder, Root<Lancamento> root) {
@@ -49,5 +54,27 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
             predicates.add(lteDataVencimento);
         }
         return predicates.toArray(new Predicate[predicates.size()]);
+    }
+
+
+    private void restricoesPaginacao(TypedQuery<Lancamento> query, Pageable pageable) {
+        int paginaAtual = pageable.getPageNumber();
+        int registrosPorPagina = pageable.getPageSize();
+        int primeiroRegistroPagina = paginaAtual * registrosPorPagina;
+
+        query.setFirstResult(primeiroRegistroPagina);
+        query.setMaxResults(registrosPorPagina);
+    }
+
+    private Long total(LancamentoFilter lancamentoFilter) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
+        Root<Lancamento> root = criteria.from(Lancamento.class);
+
+        Predicate[] predicates = criarRestricoes(lancamentoFilter, builder, root);
+        criteria.where(predicates);
+
+        criteria.select(builder.count(root));
+        return entityManager.createQuery(criteria).getSingleResult();
     }
 }
