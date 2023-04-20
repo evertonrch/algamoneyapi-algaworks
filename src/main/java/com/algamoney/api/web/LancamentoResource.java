@@ -3,6 +3,7 @@ package com.algamoney.api.web;
 import com.algamoney.api.event.RecursoCriadoEvent;
 import com.algamoney.api.exception.Error;
 import com.algamoney.api.model.Lancamento;
+import com.algamoney.api.repository.filter.LancamentoFilter;
 import com.algamoney.api.service.LancamentoService;
 import com.algamoney.api.service.exception.PessoaInativaException;
 import com.algamoney.api.service.exception.PessoaInexistenteException;
@@ -33,8 +34,8 @@ public class LancamentoResource {
     private MessageSource messageSource;
 
     @GetMapping
-    public ResponseEntity<List<Lancamento>> all() {
-        List<Lancamento> lancamentos = lancamentoService.getLancamentos();
+    public ResponseEntity<List<Lancamento>> search(LancamentoFilter lancamentoFilter) {
+        List<Lancamento> lancamentos = lancamentoService.getLancamentos(lancamentoFilter);
         return ResponseEntity.ok(lancamentos);
     }
 
