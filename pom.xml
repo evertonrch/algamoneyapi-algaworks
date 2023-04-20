@@ -54,6 +54,12 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
+        <!-- Type safety criteria  -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
