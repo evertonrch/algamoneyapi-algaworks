@@ -24,7 +24,6 @@ public class CategoriaResource {
     @Autowired
     private ApplicationEventPublisher publisher;
 
-    @CrossOrigin(origins = {"http://127.0.0.1:5500"}, methods = RequestMethod.GET)
     @GetMapping
     public ResponseEntity<List<Categoria>> all() {
         List<Categoria> categorias = categoriaRepository.findAll();
