@@ -1,8 +1,11 @@
 package com.algamoney.api.repository.lancamento;
 
+import com.algamoney.api.model.Categoria_;
 import com.algamoney.api.model.Lancamento;
 import com.algamoney.api.model.Lancamento_;
+import com.algamoney.api.model.Pessoa_;
 import com.algamoney.api.repository.filter.LancamentoFilter;
+import com.algamoney.api.repository.projection.ResumoLancamento;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -57,7 +60,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
     }
 
 
-    private void restricoesPaginacao(TypedQuery<Lancamento> query, Pageable pageable) {
+    private void restricoesPaginacao(TypedQuery<?> query, Pageable pageable) {
         int paginaAtual = pageable.getPageNumber();
         int registrosPorPagina = pageable.getPageSize();
         int primeiroRegistroPagina = paginaAtual * registrosPorPagina;
@@ -76,5 +79,27 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
         criteria.select(builder.count(root));
         return entityManager.createQuery(criteria).getSingleResult();
+    }
+
+    @Override
+    public Page<ResumoLancamento> resumir(LancamentoFilter lancamentoFilter, Pageable pageable) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ResumoLancamento> criteria = builder.createQuery(ResumoLancamento.class);
+        Root<Lancamento> root = criteria.from(Lancamento.class);
+
+        criteria.select(builder.construct(ResumoLancamento.class,
+                root.get(Lancamento_.id), root.get(Lancamento_.descricao),
+                root.get(Lancamento_.dataPagamento), root.get(Lancamento_.dataVencimento),
+                root.get(Lancamento_.valor), root.get(Lancamento_.tipoLancamento),
+                root.get(Lancamento_.categoria).get(Categoria_.nome),
+                root.get(Lancamento_.pessoa).get(Pessoa_.nome)));
+
+        Predicate[] predicates = criarRestricoes(lancamentoFilter, builder, root);
+        criteria.where(predicates);
+
+        TypedQuery<ResumoLancamento> query = entityManager.createQuery(criteria);
+        restricoesPaginacao(query, pageable);
+
+        return new PageImpl<>(query.getResultList(), pageable, total(lancamentoFilter));
     }
 }

@@ -4,6 +4,7 @@ import com.algamoney.api.event.RecursoCriadoEvent;
 import com.algamoney.api.exception.Error;
 import com.algamoney.api.model.Lancamento;
 import com.algamoney.api.repository.filter.LancamentoFilter;
+import com.algamoney.api.repository.projection.ResumoLancamento;
 import com.algamoney.api.service.LancamentoService;
 import com.algamoney.api.service.exception.PessoaInativaException;
 import com.algamoney.api.service.exception.PessoaInexistenteException;
@@ -41,6 +42,13 @@ public class LancamentoResource {
     public ResponseEntity<Page<Lancamento>> search(LancamentoFilter lancamentoFilter, Pageable pageable) {
         Page<Lancamento> lancamentos = lancamentoService.getLancamentos(lancamentoFilter, pageable);
         return ResponseEntity.ok(lancamentos);
+    }
+
+    @GetMapping(params = "resumo")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
+    public ResponseEntity<Page<ResumoLancamento>> resume(LancamentoFilter lancamentoFilter, Pageable pageable) {
+        Page<ResumoLancamento> resumoLancamentos = lancamentoService.getResumo(lancamentoFilter, pageable);
+        return ResponseEntity.ok(resumoLancamentos);
     }
 
     @GetMapping("/{id}")
