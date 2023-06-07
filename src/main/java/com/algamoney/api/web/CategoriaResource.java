@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ public class CategoriaResource {
     private ApplicationEventPublisher publisher;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA')")
     public ResponseEntity<List<Categoria>> all() {
         List<Categoria> categorias = categoriaRepository.findAll();
         return !categorias.isEmpty() ?
@@ -33,6 +35,7 @@ public class CategoriaResource {
     }
 
     @GetMapping("/{identifier}")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and hasAuthority('SCOPE_read')")
     public ResponseEntity<Categoria> getCategoria(@PathVariable("identifier") Long id) {
         Optional<Categoria> categoria = categoriaRepository.findById(id);
         return categoria
@@ -41,6 +44,7 @@ public class CategoriaResource {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and hasAuthority('SCOPE_write')")
     public ResponseEntity<Categoria> create(@RequestBody @Valid Categoria categoria, HttpServletResponse response) {
         Categoria novaCategoria = categoriaRepository.save(categoria);
         // Evento de criar header Location
@@ -51,6 +55,7 @@ public class CategoriaResource {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_REMOVER_CATEGORIA') and hasAuthority('SCOPE_write')")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         categoriaRepository.deleteById(id);
         return ResponseEntity.noContent().build();

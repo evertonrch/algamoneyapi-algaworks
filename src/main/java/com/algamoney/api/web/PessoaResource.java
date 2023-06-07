@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ public class PessoaResource {
     private ApplicationEventPublisher publisher;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and hasAuthority('SCOPE_read')")
     public ResponseEntity<List<Pessoa>> all() {
         List<Pessoa> pessoas = pessoaRepository.findAll();
         return !pessoas.isEmpty() ?
@@ -36,6 +38,7 @@ public class PessoaResource {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and hasAuthority('SCOPE_write')")
     public ResponseEntity<Pessoa> create(@RequestBody @Valid Pessoa pessoa, HttpServletResponse response) {
         Pessoa newPessoa = pessoaRepository.save(pessoa);
 
@@ -47,6 +50,7 @@ public class PessoaResource {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and hasAuthority('SCOPE_read')")
     public ResponseEntity<Pessoa> getPessoa(@PathVariable Long id) {
         return pessoaRepository
                 .findById(id)
@@ -65,8 +69,7 @@ public class PessoaResource {
     // Atualização parcial
     @PutMapping("/{id}/ativo")
     public ResponseEntity<?> atualizaPropriedadeAtivo(@PathVariable Long id, @RequestBody Boolean ativo) {
-        pessoaService.atualizarPropriedadeAtivo(id , ativo);
+        pessoaService.atualizarPropriedadeAtivo(id, ativo);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }
