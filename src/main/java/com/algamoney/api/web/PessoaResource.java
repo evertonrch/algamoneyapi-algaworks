@@ -40,7 +40,7 @@ public class PessoaResource {
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and hasAuthority('SCOPE_write')")
     public ResponseEntity<Pessoa> create(@RequestBody @Valid Pessoa pessoa, HttpServletResponse response) {
-        Pessoa newPessoa = pessoaRepository.save(pessoa);
+        Pessoa newPessoa = pessoaService.salvar(pessoa);
 
         // Evento de criar header Location
         publisher.publishEvent(new RecursoCriadoEvent(this, response, newPessoa.getId()));

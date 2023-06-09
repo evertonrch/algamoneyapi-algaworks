@@ -36,4 +36,9 @@ public class PessoaService {
 
         return findPessoa.get();
     }
+
+    public Pessoa salvar(Pessoa pessoa) {
+        pessoa.getContatos().forEach(contato -> contato.setPessoa(pessoa));
+        return pessoaRepository.save(pessoa);
+    }
 }
