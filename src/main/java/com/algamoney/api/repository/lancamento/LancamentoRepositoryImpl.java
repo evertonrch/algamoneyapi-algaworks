@@ -1,5 +1,6 @@
 package com.algamoney.api.repository.lancamento;
 
+import com.algamoney.api.dto.LancamentoEstatisticaPessoa;
 import com.algamoney.api.model.Categoria_;
 import com.algamoney.api.model.Lancamento;
 import com.algamoney.api.model.Lancamento_;
@@ -18,6 +19,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,5 +103,25 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
         restricoesPaginacao(query, pageable);
 
         return new PageImpl<>(query.getResultList(), pageable, total(lancamentoFilter));
+    }
+
+    @Override
+    public List<LancamentoEstatisticaPessoa> porPessoa(LocalDate dtInicio, LocalDate dtFim) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<LancamentoEstatisticaPessoa> criteria = builder.createQuery(LancamentoEstatisticaPessoa.class);
+        Root<Lancamento> root = criteria.from(Lancamento.class);
+
+        criteria.select(builder.construct(LancamentoEstatisticaPessoa.class,
+                root.get(Lancamento_.tipoLancamento),
+                root.get(Lancamento_.pessoa),
+                builder.sum(root.get(Lancamento_.valor))));
+
+        criteria.where(
+                builder.greaterThanOrEqualTo(root.get(Lancamento_.dataVencimento), dtInicio),
+                builder.lessThanOrEqualTo(root.get(Lancamento_.dataVencimento), dtFim)
+        );
+
+        criteria.groupBy(root.get(Lancamento_.tipoLancamento), root.get(Lancamento_.pessoa));
+        return entityManager.createQuery(criteria).getResultList();
     }
 }
