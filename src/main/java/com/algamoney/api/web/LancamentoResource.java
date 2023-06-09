@@ -8,19 +8,25 @@ import com.algamoney.api.repository.projection.ResumoLancamento;
 import com.algamoney.api.service.LancamentoService;
 import com.algamoney.api.service.exception.PessoaInativaException;
 import com.algamoney.api.service.exception.PessoaInexistenteException;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -74,6 +80,18 @@ public class LancamentoResource {
     public ResponseEntity<?> delete(@PathVariable Long id) {
         lancamentoService.deleteLancamento(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/relatorios/por-pessoa")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
+    public ResponseEntity<byte[]> relatorioPorPessoa(
+            @RequestParam("inicio") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dtInicio,
+            @RequestParam("fim") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dtFim
+            ) throws JRException, IOException {
+        byte[] relatorio = lancamentoService.relatorioPorPessoa(dtInicio, dtFim);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE)
+                .body(relatorio);
     }
 
     @ExceptionHandler({PessoaInativaException.class})
