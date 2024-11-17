@@ -1,1 +1,3 @@
-Projeto FullStack desenvolvido com Spring/Angular
+### Projeto FullStack 
+
+#### Desenvolvido com `Java/Spring e Angular`
