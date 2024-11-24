@@ -23,7 +23,13 @@
 
     <!-- tabela -->
     <div class="col-12">
-        <p-table [value]="lancamentos" styleClass="p-datatable-sm" [tableStyle]="{'min-width': '50rem'}">
+        <p-table 
+            [value]="lancamentos" 
+            [paginator]="true" [rows]="3" 
+            [showCurrentPageReport]="true"
+            styleClass="p-datatable-sm" 
+            [tableStyle]="{'min-width': '50rem'}">
+
             <ng-template pTemplate="header">
               <tr>
                 <th>Pessoa</th>
