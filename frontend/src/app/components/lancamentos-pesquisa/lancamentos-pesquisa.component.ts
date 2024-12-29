@@ -23,8 +23,4 @@ export class LancamentosPesquisaComponent {
     { tipo: 'DESPESA', descricao: 'Mensalidade musculação', dataVencimento: '13/07/2017',
       dataPagamento: null, valor: 180, pessoa: 'Academia Top' }
   ]
-
-  public tipoValor(tipo: any): string {
-    return tipo === 'DESPESA' ? 'red' : 'blue';
-  }
 }
