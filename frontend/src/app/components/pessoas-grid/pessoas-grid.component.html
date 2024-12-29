@@ -1,0 +1,51 @@
+<p-table
+  [value]="pessoas"
+  [paginator]="true"
+  [rows]="4"
+  styleClass="p-datatable-sm"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  responsiveLayout="stack"
+  [breakpoint]="'560px'"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Nome</th>
+      <th>Cidade</th>
+      <th class="col-data-header">Estado</th>
+      <th class="col-data-header">Status</th>
+      <th class="col-acoes-header"></th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-pessoa>
+    <tr>
+      <td>{{ pessoa.nome }}</td>
+      <td>{{ pessoa.cidade }}</td>
+      <td>{{ pessoa.estado }}</td>
+      <td>
+        <a
+          [pTooltip]="isAtivo(pessoa.ativo, true)"
+          tooltipPosition="top"
+          href="#"
+        >
+          {{ isAtivo(pessoa.ativo) }}
+        </a>
+      </td>
+      <!-- para os icones ficarem juntos  -->
+      <td class="col-acoes" style="justify-content: start">
+        <a
+          pButton
+          icon="pi pi-pencil"
+          pTooltip="Editar"
+          tooltipPosition="top"
+        ></a>
+        <button
+          pButton
+          icon="pi pi-trash"
+          pTooltip="Excluir"
+          tooltipPosition="top"
+        ></button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

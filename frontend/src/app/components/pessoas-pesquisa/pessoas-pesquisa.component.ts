@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-interface Pessoa {
+export interface Pessoa {
   nome: string,
   cidade: string,
   estado: string,
@@ -58,11 +58,4 @@ export class PessoasPesquisaComponent {
       ativo: true
     }
   ]  
-
-  public isAtivo(ativo: boolean, inverte: boolean = false): string {
-    if(inverte) {
-      return ativo ? "Desativar" : "Ativar"
-    }
-    return ativo ? "Ativo" : "Inativo"
-  }
 }
