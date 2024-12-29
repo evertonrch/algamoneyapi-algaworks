@@ -1,0 +1,17 @@
+.col-acoes-header {
+    width: 115px;
+}
+
+.col-acoes {
+    width: 115px;
+    text-align: center !important;
+}
+
+.col-acoes .p-button {
+    margin: 1px;
+}
+
+a {
+    text-decoration: none;
+    /* color: #3a3633; */
+}
